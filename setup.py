@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='my_correlation_package',  # Nom de ton package
-    version='0.1.0',                # Version initiale
-    description='A package to perform automatic correlation analysis',
-    author='Ton Nom',
-    author_email='ton.email@example.com',
-    url='https://github.com/ton-compte/my_correlation_package',  # URL du projet
-    packages=find_packages(),  # Recherche automatiquement les sous-packages
-    install_requires=[          # Les dépendances nécessaires
+    name='correlation_analysis',
+    version='0.1.0',
+    description='Un package Python pour analyser la corrélation, incluant des tests de normalité, de linéarité, et des visualisations pour évaluer les relations entre variables.',
+    author='CHABI ADJOBO AYEDESSO',
+    author_email='aurelus.chabi@gmail.com',
+    url='https://github.com/chabiadjobo/correlation_analysis',
+    packages=find_packages(),
+    install_requires=[
         'pandas',
         'numpy',
         'scipy',
@@ -16,11 +16,11 @@ setup(
         'seaborn',
         'statsmodels',
     ],
-    classifiers=[               # Métadonnées (pour PyPI)
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
     ],
-    python_requires='>=3.6',     # Version minimale de Python
+    python_requires='>=3.6',
 )

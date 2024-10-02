@@ -1,6 +1,6 @@
 # correlation_analysis.py
 
-from .utils import (
+from correlation_insight.utils import (
     test_normality, 
     choisir_correlation_auto, 
     calculer_correlation, 
