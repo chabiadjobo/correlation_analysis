@@ -1,0 +1,153 @@
+# Importation des bibliothèques nécessaires
+import pandas as pd
+import numpy as np
+import itertools
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+import statsmodels.api as sm
+from statsmodels.stats.diagnostic import linear_reset
+from statsmodels.stats.stattools import durbin_watson
+
+# 1. Fonction pour le test de normalité
+def test_normality(df, column):
+    stat, p = stats.shapiro(df[column].dropna())
+    return p > 0.05
+
+# 2. Test de linéarité : Durbin-Watson
+def test_linearity(df, var1, var2):
+    X = sm.add_constant(df[var1])
+    model = sm.OLS(df[var2], X).fit()
+    dw_stat = sm.stats.durbin_watson(model.resid)
+    return 1.5 <= dw_stat <= 2.5
+
+# 3. Test de non-linéarité : RESET de Ramsey
+def test_non_linearity(df, var1, var2):
+    X = sm.add_constant(df[var1])
+    model = sm.OLS(df[var2], X).fit()
+    ramsey_test = linear_reset(model, power=2)
+    return ramsey_test.pvalue < 0.05
+
+# 4. Détection de déséquilibres et valeurs aberrantes
+def desequilibre_outliers(var_des):
+    if var_des.isnull().all():
+        return {"is_balanced": False, "skewness": np.nan, "num_outliers": 0}
+
+    value_counts = var_des.value_counts()
+    max_frequency = value_counts.max()
+    min_frequency = value_counts.min()
+    skewness = stats.skew(var_des.dropna())
+
+    Q1, Q3 = np.percentile(var_des.dropna(), [25, 75])
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    outliers = var_des[(var_des < lower_bound) | (var_des > upper_bound)]
+
+    return {
+        "is_balanced": (max_frequency / min_frequency) < 10,
+        "skewness": skewness,
+        "num_outliers": len(outliers)
+    }
+
+# 5. Fonction pour choisir la méthode de corrélation
+def choisir_correlation_auto(df, var1, var2, normal_var1, normal_var2):
+    if normal_var1 and normal_var2:
+        return "pearson" if test_linearity(df, var1, var2) else "spearman"
+    if test_non_linearity(df, var1, var2):
+        if desequilibre_outliers(df[var1])['is_balanced'] or desequilibre_outliers(df[var2])['is_balanced']:
+            return "kendall"
+    return "spearman"
+
+# 6. Fonction pour calculer la corrélation
+def calculer_correlation(method, df, var1, var2):
+    return df[var1].corr(df[var2], method=method)
+
+# 7. Fonction de visualisation de la relation entre deux variables
+def visualiser_relation(df, var1, var2, mode='manuel'):
+    if mode == 'auto':
+        X = sm.add_constant(df[var1])
+        y = df[var2]
+        model = sm.OLS(y, X).fit()
+        dw_stat = durbin_watson(model.resid)
+        reset_test = linear_reset(model, power=2)
+
+        if 1.8 <= dw_stat <= 2.2 and reset_test.pvalue > 0.05:
+            return '1'  # Linéaire
+        elif reset_test.pvalue < 0.05:
+            poly_fit = np.poly1d(np.polyfit(df[var1], df[var2], 2))
+            r2_quad = np.corrcoef(df[var2], poly_fit(df[var1]))[0, 1] ** 2
+            poly_fit_cubic = np.poly1d(np.polyfit(df[var1], df[var2], 3))
+            r2_cubic = np.corrcoef(df[var2], poly_fit_cubic(df[var1]))[0, 1] ** 2
+            return '2' if r2_quad > r2_cubic else '3'  # Quadratique ou cubique
+        else:
+            return '4'  # Autre
+
+    else:
+        fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+        sns.regplot(x=df[var1], y=df[var2], ax=axes[0], line_kws={"color": "red"}, ci=None)
+        axes[0].set_title("Ajustement Linéaire")
+        poly_fit = np.poly1d(np.polyfit(df[var1], df[var2], 2))
+        sns.scatterplot(x=df[var1], y=df[var2], ax=axes[1])
+        sns.lineplot(x=df[var1], y=poly_fit(df[var1]), ax=axes[1], color="green")
+        axes[1].set_title("Ajustement Quadratique")
+        poly_fit_cubic = np.poly1d(np.polyfit(df[var1], df[var2], 3))
+        sns.scatterplot(x=df[var1], y=df[var2], ax=axes[2])
+        sns.lineplot(x=df[var1], y=poly_fit_cubic(df[var1]), ax=axes[2], color="blue")
+        axes[2].set_title("Ajustement Cubique")
+        plt.tight_layout()
+        plt.show()
+
+        return input("Choisissez la relation (1 : Linéaire, 2 : Quadratique, 3 : Cubique, 4 : Autre) : ")
+
+# 8. Fonction pour la significativité
+def obtenir_significativite(p_value):
+    if p_value < 0.001: return '***'
+    if p_value < 0.01: return '**'
+    if p_value < 0.05: return '*'
+    return ''
+
+# 9. Fonction principale d'analyse de corrélation
+def analyser_correlation(df, var1, var2, mode='auto'):
+    normal_var1 = test_normality(df, var1)
+    normal_var2 = test_normality(df, var2)
+
+    if mode == 'auto':
+        method = choisir_correlation_auto(df, var1, var2, normal_var1, normal_var2)
+    else:
+        method = visualiser_relation(df, var1, var2)
+
+    correlation_value = calculer_correlation(method, df, var1, var2)
+    print(f"Corrélation ({method}) entre {var1} et {var2} : {correlation_value}")
+    
+    return correlation_value, method
+
+# 10. Fonction pour analyser plusieurs paires de variables
+def analyser_correlation_multiple(df, variables, mode='auto'):
+    resultats = []
+    combinaisons = itertools.combinations(variables, 2)
+
+    for var1, var2 in combinaisons:
+        print(f"\nAnalyse de la corrélation entre '{var1}' et '{var2}' :")
+        normal_var1 = test_normality(df, var1)
+        normal_var2 = test_normality(df, var2)
+
+        if mode == 'auto':
+            method = choisir_correlation_auto(df, var1, var2, normal_var1, normal_var2)
+        else:
+            method = visualiser_relation(df, var1, var2)
+
+        corr, p_value = stats.pearsonr(df[var1], df[var2]) if method == "pearson" else \
+                        stats.spearmanr(df[var1], df[var2]) if method == "spearman" else \
+                        stats.kendalltau(df[var1], df[var2])
+
+        resultats.append({
+            'Variable 1': var1,
+            'Variable 2': var2,
+            'Valeur de Corrélation': corr,
+            'P-value': p_value,
+            'Méthode de Corrélation': method,
+            'Significativité': obtenir_significativite(p_value)
+        })
+
+    return pd.DataFrame(resultats, columns=['Variable 1', 'Variable 2', 'Valeur de Corrélation', 'P-value', 'Méthode de Corrélation', 'Significativité'])
