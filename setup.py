@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='correlation_analysis',
+    name='correlation_insight',
     version='0.1.0',
     description='Un package Python pour analyser la corrélation, incluant des tests de normalité, de linéarité, et des visualisations pour évaluer les relations entre variables.',
     author='CHABI ADJOBO AYEDESSO',
     author_email='aurelus.chabi@gmail.com',
-    url='https://github.com/chabiadjobo/correlation_analysis',
+    url='https://github.com/chabiadjobo/correlation_insight',
     packages=find_packages(),
     install_requires=[
         'pandas',

@@ -1,6 +1,6 @@
 # correlation_analysis.py
 
-from correlation_insight.utils import (
+from .utils import (
     test_normality, 
     choisir_correlation_auto, 
     calculer_correlation, 
@@ -12,7 +12,7 @@ import itertools
 import pandas as pd
 
 # Fonction principale d'analyse de corrélation
-def analyser_correlation(df, var1, var2, mode='auto'):
+def analyze_correlation (df, var1, var2, mode='auto'):
     normal_var1 = test_normality(df, var1)
     normal_var2 = test_normality(df, var2)
 
@@ -27,7 +27,7 @@ def analyser_correlation(df, var1, var2, mode='auto'):
     return correlation_value, method
 
 # Fonction pour analyser plusieurs paires de variables
-def analyser_correlation_multiple(df, variables, mode='auto'):
+def analyze_multiple_correlations (df, variables, mode='auto'):
     resultats = []
     combinaisons = itertools.combinations(variables, 2)
 

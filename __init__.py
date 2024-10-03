@@ -1,8 +1,8 @@
 # __init__.py
 
 from .correlation_analysis import (
-    analyser_correlation,
-    analyser_correlation_multiple
+    analyze_correlation,
+    analyze_multiple_correlations
 )
 from .utils import (
     test_normality,

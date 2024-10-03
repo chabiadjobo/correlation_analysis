@@ -8,41 +8,33 @@
 - **Test de linéarité** à l'aide de Durbin-Watson.
 - **Test de non-linéarité** avec le test RESET de Ramsey.
 - **Détection de déséquilibres** et de valeurs aberrantes dans les variables.
-- Choix automatique de la méthode de corrélation (Pearson, Spearman, Kendall) selon la distribution des données.
-- Visualisation des relations entre variables avec des graphiques.
+- **Choix automatique de la méthode de corrélation** (Pearson, Spearman, Kendall) selon la distribution des données.
+- **Visualisation des relations entre variables avec des graphiques.**
 
 # Installation
 
 Pour installer le package, utilisez `pip` :
 
 ```bash
-pip install correlation_analysis
+pip install correlation_insight
 ```
 
 # Utilisation
 
 ```
 import pandas as pd
-from correlation_analysis import correlation_analysis as ca
+from correlation_insight import analyze_correlation ac
 
 # Chargement d'un DataFrame
 df = pd.read_csv('votre_fichier.csv')
 
 # Analyser la corrélation entre deux variables
-correlation, method = ca.analyser_correlation(df, 'var1', 'var2')
+correlation, method = ac.analyze_correlation (df, 'var1', 'var2')
 
 print(f"Corrélation entre var1 et var2 : {correlation} (Méthode : {method})")
 
 ```
 
-# Tests
-
-```
-pytest tests/
-
-```
-
-Pour exécuter les tests unitaires, assurez-vous d'avoir `pytest` installé et exécutez :
 
 # Contribuer
 
