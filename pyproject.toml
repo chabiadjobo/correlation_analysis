@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "correlation_analysis"
+name = "correlation_insight"
 version = "0.1.0"
 description = "Un package Python pour l'analyse de corrélation, incluant des tests de normalité, de linéarité, et des visualisations pour évaluer les relations entre variables."
 authors = ["CHABI ADJOBO AYEDESSO <aurelus.chabi@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = ""
-repository = "https://github.com/chabiadjobo/correlation_analysis"
+repository = "https://github.com/chabiadjobo/correlation_insight"
 
 [tool.poetry.dependencies]
 python = "^3.8"
