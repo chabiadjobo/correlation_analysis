@@ -1,6 +1,6 @@
 # Description
 
-correlation_insight est un package Python destiné à l'analyse de corrélations entre variables dans des ensembles de données. Il fournit des outils pour tester la normalité des données, évaluer la linéarité, détecter les déséquilibres et les valeurs aberrantes, ainsi que pour calculer et visualiser les coefficients de corrélation.
+correlationinspector est un package Python destiné à l'analyse de corrélations entre variables dans des ensembles de données. Il fournit des outils pour tester la normalité des données, évaluer la linéarité, détecter les déséquilibres et les valeurs aberrantes, ainsi que pour calculer et visualiser les coefficients de corrélation.
 
 # Fonctionnalités
 
@@ -16,7 +16,7 @@ correlation_insight est un package Python destiné à l'analyse de corrélations
 Pour installer le package, utilisez `pip` :
 
 ```bash
-pip install correlation_insight
+pip install correlationinspector
 ```
 
 # Documentation des Fonctions
@@ -72,11 +72,16 @@ Les dépendances suivantes seront installées automatiquement avec le package : 
 
 # Utilisation
 
+
+## Préparation des données
+
+Avant d'utiliser ce package pour analyser les corrélations, assurez-vous que vos données sont nettoyées. Cela signifie qu'il ne doit pas y avoir de valeurs manquantes (`NaN`) ou infinies dans les colonnes que vous souhaitez analyser.
+
 ## Analyser la corrélation entre deux variables
 
 ```
 import pandas as pd
-from correlation_insight import analyze_correlation
+from correlationinspector import analyze_correlation
 
 # Chargement d'un DataFrame
 df = pd.read_csv('votre_fichier.csv')
@@ -92,7 +97,7 @@ print(f"Corrélation entre var1 et var2 : {correlation} (Méthode : {method})")
 
 ```
 import pandas as pd
-from correlation_insight import analyze_multiple_correlations
+from correlationinspector import analyze_multiple_correlations
 
 # Chargement d'un DataFrame
 df = pd.read_csv('votre_fichier.csv')
